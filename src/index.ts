@@ -1,20 +1,29 @@
 import express from "express";
 import mongoose, { MongooseError } from "mongoose";
 import cors from "cors";
+import authRoutes from "./routes/auth.routes";
+import userRoutes from "./routes/user.routes";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 
 mongoose
-  .connect("mongodb://localhost:27017/cinemax-authentication", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as mongoose.ConnectOptions)
+  .connect(
+    process.env.DB_URL as string,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as mongoose.ConnectOptions
+  )
   .then(() => console.log("Mongoose connected successfully!"))
   .catch((err: MongooseError) =>
     console.log("Could not connect mongoose: ", err)
