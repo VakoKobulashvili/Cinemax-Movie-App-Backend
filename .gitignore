@@ -1,0 +1,41 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+*.log.*
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Optional: coverage reports, testing
+coverage/
+jest-html-reporters-*
+
+# Optional: if using Docker
+docker-compose.override.yml
