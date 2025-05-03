@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = Number(process.env.PORT);
 
 app.use(cors());
 app.use(express.json());
@@ -29,6 +29,6 @@ mongoose
     console.log("Could not connect mongoose: ", err)
   );
 
-app.listen(PORT, () => {
-  console.log("App started!");
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`App started on http://0.0.0.0:${PORT}`);
 });

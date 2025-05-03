@@ -4,14 +4,20 @@ import generateToken from "../utils/generateToken";
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { email, fullName, password } = req.body;
+    const { fullName, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+      email: req.body.email.toLowerCase(),
+    });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = new User({ email, fullName, password });
+    const user = new User({
+      fullName,
+      email: req.body.email.toLowerCase(),
+      password,
+    });
     await user.save();
 
     const token = generateToken(user._id);
@@ -20,8 +26,8 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       token,
       user: {
         id: user._id,
-        email: user.email,
         fullName: user.fullName,
+        email: user.email,
       },
     });
   } catch (error) {
@@ -32,9 +38,9 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
 export const login = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -50,6 +56,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       token,
       user: {
         id: user._id,
+        fullName: user.fullName,
         email: user.email,
       },
     });
