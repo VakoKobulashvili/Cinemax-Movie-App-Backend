@@ -2,10 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import User from "../models/user.model";
-
-interface AuthRequest extends Request {
-  user?: any;
-}
+import AuthRequest from "../interfaces/AuthRequest.interface";
 
 export const protect = async (
   req: AuthRequest,
@@ -14,22 +11,18 @@ export const protect = async (
 ): Promise<any> => {
   try {
     const authHeader = req.headers.authorization;
-    console.log("Authorization header:", authHeader); // Debugging
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "Not authorized, no token" });
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("Extracted token:", token); // Debugging
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as {
       id: string;
     };
-    console.log("Decoded token:", decoded); // Debugging
 
     const user = await User.findById(decoded.id).select("-password");
-    console.log("User from DB:", user); // Debugging
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -38,7 +31,6 @@ export const protect = async (
     req.user = user;
     next();
   } catch (err) {
-    console.error("Auth error:", err); // Debugging
     res.status(401).json({ message: "Not authorized, token failed" });
   }
 };
