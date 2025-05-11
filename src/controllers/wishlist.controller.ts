@@ -8,14 +8,16 @@ export const addToWishlist = async (
 ): Promise<any> => {
   try {
     const user = await User.findOne({ _id: req.user._id });
-    const movieId = req.body;
+    const { movieId } = req.body;
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user.wishlist.includes(movieId)) {
-      user.wishlist.push(movieId);
-      await user.save();
+    if (user.wishlist.includes(movieId)) {
+      return res.status(409).json({ message: "Movie is already in wishlist" });
     }
+
+    user.wishlist.push(movieId);
+    await user.save();
 
     res.status(200).json(user.wishlist);
   } catch (err) {
@@ -29,7 +31,7 @@ export const removeFromWishlist = async (
 ): Promise<any> => {
   try {
     const user = await User.findOne({ _id: req.user._id });
-    const movieId = req.body;
+    const { movieId } = req.body;
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
