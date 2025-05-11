@@ -31,9 +31,16 @@ export const removeFromWishlist = async (
 ): Promise<any> => {
   try {
     const user = await User.findOne({ _id: req.user._id });
-    const { movieId } = req.body;
+    const { movieId } = req.params;
 
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user.wishlist.includes(movieId)) {
+      return res.status(409).json({
+        message: "Movie not found in wishlist",
+        wishlist: user.wishlist,
+      });
+    }
 
     user.wishlist = user.wishlist.filter((id) => id !== movieId);
     await user.save();

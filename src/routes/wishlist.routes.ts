@@ -8,6 +8,6 @@ import { protect } from "../middlewares/auth.middleware";
 const router = express.Router();
 
 router.post("/wishlist/add", protect, addToWishlist);
-router.post("/wishlist/remove", protect, removeFromWishlist);
+router.delete("/wishlist/remove/:movieId", protect, removeFromWishlist);
 
 export default router;
