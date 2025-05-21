@@ -21,6 +21,7 @@ export const getUser = async (
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json({
+      avatar: user.avatar,
       email: user.email,
       fullName: user.fullName,
       wishlist: user.wishlist,
