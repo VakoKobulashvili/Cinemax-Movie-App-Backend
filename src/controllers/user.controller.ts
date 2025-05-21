@@ -30,7 +30,10 @@ export const getUser = async (
   }
 };
 
-export const updateUser = async (req: AuthRequest, res: Response) => {
+export const updateUser = async (
+  req: AuthRequest,
+  res: Response
+): Promise<any> => {
   try {
     const { fullName, email, password, avatar } = req.body;
     const user = await User.findOne({ _id: req.user._id });
