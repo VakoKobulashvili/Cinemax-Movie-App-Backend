@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
   _id: string;
+  avatar: string;
   email: string;
   fullName: string;
   password: string;
@@ -11,6 +12,11 @@ export interface IUser extends Document {
 }
 
 const userSchema = new mongoose.Schema<IUser>({
+  avatar: {
+    type: String,
+    default:
+      "https://res.cloudinary.com/dv0knjlnr/image/upload/v1747829036/5f857332ad694db2732c708eb30ddd63_e9x3dn.jpg",
+  },
   email: { type: String, required: true, unique: true },
   fullName: { type: String, required: true },
   password: { type: String, required: true },

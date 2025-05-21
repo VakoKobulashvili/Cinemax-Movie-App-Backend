@@ -17,6 +17,8 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       fullName,
       email: req.body.email.toLowerCase(),
       password,
+      avatar:
+        "https://res.cloudinary.com/dv0knjlnr/image/upload/v1747829036/5f857332ad694db2732c708eb30ddd63_e9x3dn.jpg",
     });
     await user.save();
 
@@ -28,6 +30,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        avatar: user.avatar,
       },
     });
   } catch (error) {
