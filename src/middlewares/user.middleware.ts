@@ -16,6 +16,7 @@ const editProfileRules: RequestHandler[] = [
   body("avatar").optional().isURL().withMessage("Avatar must be a valid URL."),
 
   body("newPassword")
+    .optional()
     .isLength({ min: 6, max: 12 })
     .withMessage("Password must be between 6 and 12 characters."),
 ];

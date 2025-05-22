@@ -44,8 +44,8 @@ export const updateUser = async (
       confirmNewPassword,
       avatar,
     } = req.body;
-    const user = await User.findOne({ _id: req.user._id });
 
+    const user = await User.findOne({ _id: req.user._id });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (email && email.toLowerCase() !== user.email) {
@@ -56,13 +56,10 @@ export const updateUser = async (
       user.email = email.toLowerCase();
     }
 
-    if (newPassword) {
-      if (!currentPassword) {
-        return res
-          .status(400)
-          .json({ message: "Current password is required." });
-      }
+    const isPasswordUpdate =
+      currentPassword && newPassword && confirmNewPassword;
 
+    if (isPasswordUpdate) {
       const isMatch = await user.comparePassword(currentPassword);
       if (!isMatch) {
         return res
@@ -81,8 +78,6 @@ export const updateUser = async (
       }
 
       user.password = newPassword;
-    } else {
-      return res.status(400).json({ message: "New password is required." });
     }
 
     if (fullName) user.fullName = fullName;
