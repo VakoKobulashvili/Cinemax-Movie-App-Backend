@@ -36,7 +36,14 @@ export const updateUser = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { fullName, email, password, avatar } = req.body;
+    const {
+      fullName,
+      email,
+      currentPassword,
+      newPassword,
+      confirmNewPassword,
+      avatar,
+    } = req.body;
     const user = await User.findOne({ _id: req.user._id });
 
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -49,8 +56,36 @@ export const updateUser = async (
       user.email = email.toLowerCase();
     }
 
+    if (newPassword) {
+      if (!currentPassword) {
+        return res
+          .status(400)
+          .json({ message: "Current password is required." });
+      }
+
+      const isMatch = await user.comparePassword(currentPassword);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect." });
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        return res.status(400).json({ message: "Passwords do not match!" });
+      }
+
+      if (currentPassword === newPassword) {
+        return res.status(400).json({
+          message: "New password must not match the current password.",
+        });
+      }
+
+      user.password = newPassword;
+    } else {
+      return res.status(400).json({ message: "New password is required." });
+    }
+
     if (fullName) user.fullName = fullName;
-    if (password) user.password = password;
     if (avatar) user.avatar = avatar;
 
     await user.save();

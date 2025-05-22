@@ -14,6 +14,10 @@ const editProfileRules: RequestHandler[] = [
     .normalizeEmail(),
 
   body("avatar").optional().isURL().withMessage("Avatar must be a valid URL."),
+
+  body("newPassword")
+    .isLength({ min: 6, max: 12 })
+    .withMessage("Password must be between 6 and 12 characters."),
 ];
 
 const requireAtLeastOneField = (
@@ -21,12 +25,22 @@ const requireAtLeastOneField = (
   res: Response,
   next: NextFunction
 ): any => {
-  const { fullName, email, avatar } = req.body;
+  const {
+    fullName,
+    email,
+    avatar,
+    currentPassword,
+    newPassword,
+    confirmNewPassword,
+  } = req.body;
 
-  if (!fullName && !email && !avatar) {
+  const isProfileUpdate = fullName || email || avatar;
+  const isPasswordUpdate = newPassword && currentPassword && confirmNewPassword;
+
+  if (!isProfileUpdate && !isPasswordUpdate) {
     return res
       .status(400)
-      .json({ message: "At least one field to change is required!" });
+      .json({ message: "At least one valid field to change is required!" });
   }
 
   next();
