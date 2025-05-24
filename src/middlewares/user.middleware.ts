@@ -6,15 +6,12 @@ const editProfileRules: RequestHandler[] = [
     .optional()
     .isLength({ min: 3 })
     .withMessage("Full name must be at least 3 characters."),
-
   body("email")
     .optional()
     .isEmail()
     .withMessage("A valid email address is required.")
     .normalizeEmail(),
-
   body("avatar").optional().isURL().withMessage("Avatar must be a valid URL."),
-
   body("newPassword")
     .optional()
     .isLength({ min: 6, max: 12 })
@@ -36,7 +33,7 @@ const requireAtLeastOneField = (
   } = req.body;
 
   const isProfileUpdate = fullName || email || avatar;
-  const isPasswordUpdate = newPassword && currentPassword && confirmNewPassword;
+  const isPasswordUpdate = currentPassword && newPassword && confirmNewPassword;
 
   if (!isProfileUpdate && !isPasswordUpdate) {
     return res
@@ -57,6 +54,7 @@ const handleValidationErrors = (
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
+
   next();
 };
 

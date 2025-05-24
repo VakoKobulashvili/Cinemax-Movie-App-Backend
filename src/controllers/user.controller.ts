@@ -45,15 +45,48 @@ export const updateUser = async (
       avatar,
     } = req.body;
 
-    const user = await User.findOne({ _id: req.user._id });
+    const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (email && email.toLowerCase() !== user.email) {
-      const existing = await User.findOne({ email: email.toLowerCase() });
+    let isChanged = false;
+
+    const profileUpdates: any = {};
+
+    if (fullName !== undefined) {
+      if (fullName === user.fullName) {
+        return res.status(400).json({
+          message: "New full name must not match the old one.",
+        });
+      }
+      profileUpdates.fullName = fullName;
+    }
+
+    if (email !== undefined) {
+      const lowerEmail = email.toLowerCase();
+      if (lowerEmail === user.email) {
+        return res.status(400).json({
+          message: "New email must not match the old one.",
+        });
+      }
+      const existing = await User.findOne({ email: lowerEmail });
       if (existing) {
         return res.status(400).json({ message: "Email already in use." });
       }
-      user.email = email.toLowerCase();
+      profileUpdates.email = lowerEmail;
+    }
+
+    if (avatar !== undefined) {
+      if (avatar === user.avatar) {
+        return res.status(400).json({
+          message: "New avatar must not match the old one.",
+        });
+      }
+      profileUpdates.avatar = avatar;
+    }
+
+    if (Object.keys(profileUpdates).length > 0) {
+      Object.assign(user, profileUpdates);
+      isChanged = true;
     }
 
     const isPasswordUpdate =
@@ -78,10 +111,14 @@ export const updateUser = async (
       }
 
       user.password = newPassword;
+      isChanged = true;
     }
 
-    if (fullName) user.fullName = fullName;
-    if (avatar) user.avatar = avatar;
+    if (!isChanged) {
+      return res.status(400).json({
+        message: "No changes detected. Please modify at least one field.",
+      });
+    }
 
     await user.save();
 
